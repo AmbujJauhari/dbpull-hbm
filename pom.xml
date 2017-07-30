@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>dbpull-hbm</groupId>
+    <artifactId>dbpull-hbm</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.40</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-tools -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-tools</artifactId>
+            <version>5.2.5.Final</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/ant/ant -->
+        <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.6.5</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Package as an executable jar/war -->
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>ant-magic</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <taskdef name="hibernatetool"
+                                         classname="org.hibernate.tool.ant.HibernateToolTask">
+                                    <classpath>
+                                        <fileset dir="lib">
+                                            <include name="**/*.jar"/>
+                                        </fileset>
+                                    </classpath>
+                                </taskdef>
+                                <hibernatetool>
+
+                                    <jdbcconfiguration
+                                            configurationfile="hibernate.cfg.xml"
+                                            packagename="com.ambuj.schema"
+                                            detectmanytomany="true"
+                                    />
+                                    <hbm2hbmxml destdir="src/main/resources"/>
+                                    <hbm2java destdir="src/main/java"/>
+                                </hibernatetool>
+
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
